@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cetak Resi A4 - Generator Resi Pengiriman</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    /* --- FORM INPUT (HILANG SAAT PRINT) --- */
+    .form-container {
+      background: #ffffff;
+      width: 100%;
+      max-width: 210mm;
+      padding: 28px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+    }
+
+    .form-header {
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+
+    .form-header h2 {
+      font-size: 20px;
+      color: #0f172a;
+      font-weight: 800;
+    }
+
+    .form-section {
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px dashed #cbd5e1;
+    }
+
+    .form-section h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #334155;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s ease;
+      background: #f8fafc;
+    }
+
+    textarea:focus {
+      border-color: #0f172a;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+    }
+
+    .penerima-card-input {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .btn-del {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .btn-add {
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      width: 100%;
+      margin-bottom: 14px;
+    }
+
+    .btn-print {
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 16px;
+      width: 100%;
+      letter-spacing: 0.5px;
+    }
+
+    /* --- LAYOUT PRINT A4 --- */
+    .a4-page {
+      width: 210mm;
+      height: 297mm;
+      background: white;
+      padding: 10mm 12mm;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 6mm;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      page-break-after: always;
+    }
+
+    .slot-resi {
+      width: 100%;
+      border: 3px solid #000000;
+      border-radius: 12px;
+      padding: 16px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* HEADER RESI */
+    .brand-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid #000000;
+      padding-bottom: 8px;
+    }
+
+    .brand-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: #000000;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .badge-express {
+      background: #000000;
+      color: #ffffff;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+    }
+
+    /* TABEL PENGIRIM & PENERIMA */
+    .table-box {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 3px solid #000000;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .table-box td {
+      padding: 0;
+      vertical-align: top;
+    }
+
+    .col-pengirim { 
+      width: 45%; 
+      border-right: 3px solid #000000;
+    }
+
+    .col-penerima { 
+      width: 55%; 
+    }
+
+    /* BLOK HITAM HEADER PENERIMA & PENGIRIM */
+    .header-tag-block {
+      background: #000000;
+      color: #ffffff;
+      padding: 8px 12px;
+      font-size: 15px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      text-align: left;
+    }
+
+    /* TEXT CONTENT DIPERBESAR (20px) UNTUK KURIR */
+    .text-content-container {
+      padding: 14px;
+    }
+
+    .text-content {
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.4;
+      color: #000000;
+      white-space: pre-wrap;
+    }
+
+    /* WARNING FRAGILE AREA */
+    .warning-area {
+      border: 3px dashed #dc2626;
+      border-radius: 8px;
+      padding: 10px 14px;
+      text-align: center;
+      background-color: #fff5f5;
+    }
+
+    .warning-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .svg-icon {
+      width: 36px;
+      height: 36px;
+      fill: #dc2626;
+      flex-shrink: 0;
+    }
+
+    .warning-text-container {
+      color: #dc2626;
+      font-weight: 900;
+    }
+
+    .warning-main {
+      font-size: 18px;
+      letter-spacing: 0.5px;
+    }
+
+    .warning-sub {
+      font-size: 15px;
+    }
+
+    .warning-detail {
+      font-size: 16px;
+    }
+
+    /* FOOTER SEDERHANA (TANPA QR & WA CS) */
+    .footer-area {
+      border-top: 2px solid #000000;
+      padding-top: 8px;
+      text-align: center;
+    }
+
+    .kendala-text {
+      font-size: 12px;
+      font-weight: 800;
+      color: #000000;
+    }
+
+    /* GARIS PEMOTONG DI ANTARA RESI */
+    .cut-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 4mm 0;
+      color: #000000;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .cut-line::before,
+    .cut-line::after {
+      content: '';
+      flex: 1;
+      border-bottom: 2px dashed #000000;
+    }
+
+    .cut-icon {
+      width: 18px;
+      height: 18px;
+      fill: #000000;
+    }
+
+    /* PRINT MEDIA RULES */
+    @media print {
+      body { background: none; padding: 0; }
+      .form-container { display: none !important; }
+      .a4-page { box-shadow: none; padding: 6mm 8mm; gap: 2mm; }
+      .cut-line { margin: 2mm 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- FORM CONTAINER -->
+  <div class="form-container">
+    <div class="form-header">
+      <h2>Generator Resi Pengiriman A4</h2>
+    </div>
+    
+    <div class="form-section">
+      <h3>1. Data Pengirim</h3>
+      <div>
+        <label>Format Chat / Detail Pengirim (Baris pertama akan jadi Nama Toko di Header)</label>
+        <textarea id="pengirimTeks" rows="5" oninput="render()">NAMA TOKO / BRAND ANDA
+No HP: 0812-XXXX-XXXX
+Alamat: Jl. Contoh Pengirim No. 123, Kota Contoh
+Barang: Paket / Gift / Hampers</textarea>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>2. Data Penerima (1 Form per Penerima)</h3>
+      <div id="penerimaInputList"></div>
+      <button class="btn-add" onclick="addPenerima()">+ Tambah Penerima Lain</button>
+    </div>
+
+    <button class="btn-print" onclick="window.print()">CETAK RESI (A4)</button>
+  </div>
+
+  <!-- CONTAINER UNTUK CETAK A4 -->
+  <div id="printContainer"></div>
+
+  <script>
+    let listPenerima = [
+`- nama : Pelanggan A
+- no hp : 081234567890
+- alamat kirim : Jl. Anggrek No. 1, RT 01/RW 02, Kebayoran Baru, Jakarta Selatan`,
+
+`- nama : Pelanggan B
+- no hp : 089876543210
+- alamat kirim : Jl. Mawar No. 45, Gg. Kenanga, Surabaya, Jawa Timur`
+    ];
+
+    function renderForm() {
+      const container = document.getElementById('penerimaInputList');
+      container.innerHTML = '';
+      listPenerima.forEach((teksWa, index) => {
+        container.innerHTML += `
+          <div class="penerima-card-input">
+            <div style="font-weight:bold; margin-bottom: 8px; color: #0f172a;">Penerima #${index + 1}</div>
+            ${listPenerima.length > 1 ? `<button class="btn-del" onclick="delPenerima(${index})">Hapus</button>` : ''}
+            <div>
+              <label>Format Chat WA Customer (Penerima)</label>
+              <textarea rows="4" placeholder="Paste data WA penerima di sini..." oninput="updateData(${index}, this.value)">${teksWa}</textarea>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function addPenerima() {
+      listPenerima.push('');
+      renderForm();
+      render();
+    }
+
+    function delPenerima(index) {
+      listPenerima.splice(index, 1);
+      renderForm();
+      render();
+    }
+
+    function updateData(index, val) {
+      listPenerima[index] = val;
+      render();
+    }
+
+    function render() {
+      const container = document.getElementById('printContainer');
+      container.innerHTML = '';
+
+      const teksPengirim = document.getElementById('pengirimTeks').value;
+
+      // Ambil baris pertama dari teks pengirim sebagai Nama Brand/Toko Header
+      const barisPengirim = teksPengirim.trim().split('\n');
+      let namaBrand = barisPengirim[0] ? barisPengirim[0].replace(/^-?\s*(Nama\s*Toko|Nama|Brand)\s*:\s*/i, '') : 'NAMA TOKO / BRAND';
+
+      for (let i = 0; i < listPenerima.length; i += 2) {
+        const item1 = listPenerima[i];
+        const item2 = listPenerima[i + 1];
+
+        let pageHtml = `<div class="a4-page">`;
+        pageHtml += buildSlot(namaBrand, teksPengirim, item1);
+        
+        if (item2 !== undefined) {
+          pageHtml += `
+            <div class="cut-line">
+              <svg class="cut-icon" viewBox="0 0 24 24">
+                <path d="M19 3l-6 6 2 2 7-7V3h-3zm-10 10l-4-4 1.5-1.5L10.5 11 9 13zm-3 3c-.8 0-1.5-.7-1.5-1.5S5.2 13 6 13s1.5.7 1.5 1.5S6.8 16 6 16zm12-3c-.8 0-1.5.7-1.5 1.5s.7 1.5 1.5 1.5 1.5-.7 1.5-1.5-.7-1.5-1.5-1.5zM6 8c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3zm12 0c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z"/>
+              </svg>
+              POTONG DI SINI
+            </div>
+          `;
+          pageHtml += buildSlot(namaBrand, teksPengirim, item2);
+        }
+        
+        pageHtml += `</div>`;
+        container.innerHTML += pageHtml;
+      }
+    }
+
+    function buildSlot(namaBrand, teksPengirim, teksPenerima) {
+      return `
+        <div class="slot-resi">
+          <div class="brand-header">
+            <div class="brand-title">${namaBrand}</div>
+            <div class="badge-express">HANDLE WITH CARE</div>
+          </div>
+
+          <table class="table-box">
+            <tr>
+              <td class="col-pengirim">
+                <div class="header-tag-block">PENGIRIM</div>
+                <div class="text-content-container">
+                  <div class="text-content">${teksPengirim || ''}</div>
+                </div>
+              </td>
+              <td class="col-penerima">
+                <div class="header-tag-block">PENERIMA</div>
+                <div class="text-content-container">
+                  <div class="text-content">${teksPenerima || ''}</div>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <div class="warning-area">
+            <div class="warning-flex">
+              <svg class="svg-icon" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3l1.5 3-2 2 2.5 3.5L11 18l1-3-2.5-3L12 9l-1-3z"/>
+              </svg>
+              <div class="warning-text-container">
+                <div class="warning-main">JANGAN DIBANTING, JANGAN DILEMPAR</div>
+                <div class="warning-sub">HARAP HANDLE DENGAN HATI-HATI</div>
+                <div class="warning-detail">PAKET RAWAN PECAH / RUSAK</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer-area">
+            <div class="kendala-text">
+              * WAJIB MELAMPIRKAN VIDEO UNBOXING KETIKA MELAKUKAN KOMPLAIN PAKET
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    renderForm();
+    render();
+  </script>
+</body>
+</html>
