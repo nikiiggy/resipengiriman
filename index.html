@@ -3,66 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cetak Resi A4 - Generator Resi Pengiriman</title>
+  <title>Aesthetic Shipping Label Generator - Mini Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-page: #fbf9f5;
+      --card-bg: #ffffff;
+      --accent-dark: #1c1917;
+      --accent-soft: #f4efe6;
+      --border-color: #e7e0d3;
+      --text-main: #1c1917;
+      --text-muted: #78716c;
+      --warning-bg: #fff7ed;
+      --warning-border: #fdba74;
+      --warning-text: #c2410c;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     body {
-      background-color: #f8fafc;
+      background-color: #f1efe9;
       padding: 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 24px;
+      gap: 20px;
+      color: var(--text-main);
     }
 
-    /* --- FORM INPUT (HILANG SAAT PRINT) --- */
+    /* --- FORM INPUT CONTROLLER --- */
     .form-container {
       background: #ffffff;
       width: 100%;
       max-width: 210mm;
       padding: 28px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
-      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03);
+      border: 1px solid var(--border-color);
     }
 
     .form-header {
-      border-bottom: 2px solid #f1f5f9;
-      padding-bottom: 12px;
+      border-bottom: 2px solid var(--accent-soft);
+      padding-bottom: 14px;
       margin-bottom: 20px;
     }
 
     .form-header h2 {
-      font-size: 20px;
-      color: #0f172a;
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--accent-dark);
       font-weight: 800;
     }
 
+    .form-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
     .form-section {
-      margin-bottom: 24px;
-      padding-bottom: 18px;
-      border-bottom: 1px dashed #cbd5e1;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px dashed var(--border-color);
     }
 
     .form-section h3 {
-      font-size: 14px;
+      font-size: 12px;
       margin-bottom: 12px;
-      color: #334155;
-      font-weight: 700;
+      color: var(--text-muted);
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
     }
 
     label {
       font-size: 12px;
       font-weight: 700;
-      color: #475569;
+      color: var(--accent-dark);
       display: block;
       margin-bottom: 6px;
     }
@@ -70,25 +94,23 @@
     textarea {
       width: 100%;
       padding: 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
       font-size: 13px;
       outline: none;
-      transition: all 0.2s ease;
-      background: #f8fafc;
+      background: var(--bg-page);
     }
 
     textarea:focus {
-      border-color: #0f172a;
+      border-color: var(--accent-dark);
       background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
     }
 
     .penerima-card-input {
-      background: #f1f5f9;
-      border: 1px solid #e2e8f0;
+      background: var(--bg-page);
+      border: 1px solid var(--border-color);
       padding: 16px;
-      border-radius: 10px;
+      border-radius: 12px;
       margin-bottom: 14px;
       position: relative;
     }
@@ -108,11 +130,11 @@
     }
 
     .btn-add {
-      background: #0284c7;
-      color: white;
-      border: none;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      border: 1px solid var(--border-color);
       padding: 12px;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: 700;
       width: 100%;
@@ -120,251 +142,315 @@
     }
 
     .btn-print {
-      background: #16a34a;
+      background: var(--accent-dark);
       color: white;
       border: none;
       padding: 16px;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
       font-weight: 800;
-      font-size: 16px;
+      font-size: 15px;
       width: 100%;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
     }
 
-    /* --- LAYOUT PRINT A4 --- */
+    /* --- NAVIGASI PREVIOUS & NEXT --- */
+    .pagination-bar {
+      width: 100%;
+      max-width: 210mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .nav-btn {
+      background: var(--accent-dark);
+      color: #ffffff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .nav-btn:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
+
+    .page-indicator {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--accent-dark);
+    }
+
+    /* --- CONTAINER PREVIEW SEPEREMPAT LAYAR --- */
+    .preview-wrapper {
+      width: 100%;
+      max-width: 210mm;
+      height: 380px; /* Ukuran Mini / Ringkas */
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      background: #e2dfd8;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    /* SCALE DOWN A4 SHEET FOR PREVIEW */
     .a4-page {
       width: 210mm;
       height: 297mm;
-      background: white;
+      background: var(--bg-page);
       padding: 10mm 12mm;
       box-sizing: border-box;
-      display: flex;
+      display: none;
       flex-direction: column;
       justify-content: flex-start;
       gap: 6mm;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-      page-break-after: always;
+      transform: scale(0.55); /* Diperkecil menjadi ~50% layar */
+      transform-origin: top center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      margin-bottom: -130mm; /* Menghilangkan sisa margin karena scaling */
+    }
+
+    .a4-page.active-page {
+      display: flex;
     }
 
     .slot-resi {
       width: 100%;
-      border: 3px solid #000000;
-      border-radius: 12px;
-      padding: 16px;
-      background: #fff;
+      border: 2px solid var(--accent-dark);
+      border-radius: 16px;
+      padding: 18px;
+      background: var(--card-bg);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
-    /* HEADER RESI */
     .brand-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 3px solid #000000;
-      padding-bottom: 8px;
+      border-bottom: 2px solid var(--accent-dark);
+      padding-bottom: 10px;
     }
 
     .brand-title {
-      font-size: 24px;
-      font-weight: 900;
-      color: #000000;
-      letter-spacing: 1px;
-      text-transform: uppercase;
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--accent-dark);
     }
 
     .badge-express {
-      background: #000000;
+      background: var(--accent-dark);
       color: #ffffff;
-      padding: 5px 14px;
-      font-size: 12px;
-      font-weight: 900;
+      padding: 6px 16px;
+      font-size: 11px;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-radius: 4px;
+      border-radius: 30px;
     }
 
-    /* TABEL PENGIRIM & PENERIMA */
     .table-box {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
-      border: 3px solid #000000;
-      border-radius: 8px;
+      border: 2px solid var(--accent-dark);
+      border-radius: 12px;
       overflow: hidden;
     }
 
-    .table-box td {
-      padding: 0;
-      vertical-align: top;
-    }
+    .table-box td { padding: 0; vertical-align: top; }
 
     .col-pengirim { 
-      width: 45%; 
-      border-right: 3px solid #000000;
+      width: 42%; 
+      border-right: 2px solid var(--accent-dark);
+      background: var(--bg-page);
     }
 
-    .col-penerima { 
-      width: 55%; 
-    }
+    .col-penerima { width: 58%; background: #ffffff; }
 
-    /* BLOK HITAM HEADER PENERIMA & PENGIRIM */
     .header-tag-block {
-      background: #000000;
+      background: var(--accent-dark);
       color: #ffffff;
-      padding: 8px 12px;
-      font-size: 15px;
-      font-weight: 900;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      text-align: left;
     }
 
-    /* TEXT CONTENT DIPERBESAR (20px) UNTUK KURIR */
-    .text-content-container {
-      padding: 14px;
-    }
+    .text-content-container { padding: 16px; }
 
     .text-content {
-      font-size: 20px;
-      font-weight: 900;
-      line-height: 1.4;
-      color: #000000;
+      font-size: 19px;
+      font-weight: 800;
+      line-height: 1.45;
+      color: var(--accent-dark);
       white-space: pre-wrap;
     }
 
-    /* WARNING FRAGILE AREA */
     .warning-area {
-      border: 3px dashed #dc2626;
-      border-radius: 8px;
-      padding: 10px 14px;
+      border: 1px dashed var(--warning-border);
+      border-radius: 12px;
+      padding: 12px 16px;
       text-align: center;
-      background-color: #fff5f5;
+      background-color: var(--warning-bg);
     }
 
     .warning-flex {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 14px;
+      gap: 12px;
     }
 
     .svg-icon {
-      width: 36px;
-      height: 36px;
-      fill: #dc2626;
+      width: 32px;
+      height: 32px;
+      fill: var(--warning-text);
       flex-shrink: 0;
     }
 
-    .warning-text-container {
-      color: #dc2626;
-      font-weight: 900;
-    }
+    .warning-text-container { color: var(--warning-text); font-weight: 800; }
+    .warning-main { font-size: 15px; text-transform: uppercase; }
+    .warning-sub { font-size: 13px; opacity: 0.9; }
 
-    .warning-main {
-      font-size: 18px;
-      letter-spacing: 0.5px;
-    }
-
-    .warning-sub {
-      font-size: 15px;
-    }
-
-    .warning-detail {
-      font-size: 16px;
-    }
-
-    /* FOOTER SEDERHANA (TANPA QR & WA CS) */
     .footer-area {
-      border-top: 2px solid #000000;
-      padding-top: 8px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 10px;
       text-align: center;
     }
 
     .kendala-text {
-      font-size: 12px;
-      font-weight: 800;
-      color: #000000;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
     }
 
-    /* GARIS PEMOTONG DI ANTARA RESI */
     .cut-line {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      margin: 4mm 0;
-      color: #000000;
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: 1px;
+      gap: 12px;
+      margin: 2mm 0;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 800;
     }
 
-    .cut-line::before,
-    .cut-line::after {
+    .cut-line::before, .cut-line::after {
       content: '';
       flex: 1;
-      border-bottom: 2px dashed #000000;
+      border-bottom: 2px dashed var(--border-color);
     }
 
-    .cut-icon {
-      width: 18px;
-      height: 18px;
-      fill: #000000;
-    }
+    .cut-icon { width: 16px; height: 16px; fill: var(--text-muted); }
 
-    /* PRINT MEDIA RULES */
+    /* PRINT MEDIA RULES (OTOMATIS A4 SKALA 100% UTUH) */
     @media print {
       body { background: none; padding: 0; }
-      .form-container { display: none !important; }
-      .a4-page { box-shadow: none; padding: 6mm 8mm; gap: 2mm; }
-      .cut-line { margin: 2mm 0; }
+      .form-container, .pagination-bar, .preview-wrapper::-webkit-scrollbar { display: none !important; }
+      .preview-wrapper {
+        border: none;
+        padding: 0;
+        height: auto;
+        background: transparent;
+        overflow: visible;
+        display: block;
+      }
+      .a4-page { 
+        display: flex !important; 
+        transform: scale(1) !important; /* Kembalikan ke ukuran normal saat cetak */
+        margin-bottom: 0 !important;
+        box-shadow: none; 
+        padding: 6mm 8mm; 
+        gap: 2mm; 
+        background: #ffffff !important; 
+        page-break-after: always;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- FORM CONTAINER -->
+  <!-- FORM CONTAINER CONTROL -->
   <div class="form-container">
     <div class="form-header">
-      <h2>Generator Resi Pengiriman A4</h2>
+      <h2>Aesthetic Shipping Label Generator</h2>
+      <p>Template Cetak Resi Studio & Olshop Minimalis A4</p>
     </div>
     
     <div class="form-section">
       <h3>1. Data Pengirim</h3>
       <div>
-        <label>Format Chat / Detail Pengirim (Baris pertama akan jadi Nama Toko di Header)</label>
-        <textarea id="pengirimTeks" rows="5" oninput="render()">NAMA TOKO / BRAND ANDA
-No HP: 0812-XXXX-XXXX
-Alamat: Jl. Contoh Pengirim No. 123, Kota Contoh
-Barang: Paket / Gift / Hampers</textarea>
+        <label>Detail Pengirim (Baris pertama otomatis menjadi Nama Studio / Brand)</label>
+        <textarea id="pengirimTeks" rows="4" oninput="render()">YOUR STUDIO NAME
+No. HP: 0812-3456-7890
+Alamat: Jl. Cempaka Indah No. 88, Bandung
+Barang: Handcrafted Goods / Hampers</textarea>
       </div>
     </div>
 
     <div class="form-section">
-      <h3>2. Data Penerima (1 Form per Penerima)</h3>
+      <h3>2. Data Penerima (1 Form per Resi)</h3>
       <div id="penerimaInputList"></div>
       <button class="btn-add" onclick="addPenerima()">+ Tambah Penerima Lain</button>
     </div>
 
-    <button class="btn-print" onclick="window.print()">CETAK RESI (A4)</button>
+    <button class="btn-print" onclick="window.print()">PRINT / SIMPAN PDF (A4)</button>
   </div>
 
-  <!-- CONTAINER UNTUK CETAK A4 -->
-  <div id="printContainer"></div>
+  <!-- CONTROL PREVIOUS & NEXT -->
+  <div class="pagination-bar">
+    <button class="nav-btn" id="prevBtn" onclick="changePage(-1)">← Previous</button>
+    <div class="page-indicator" id="pageIndicator">Halaman 1 dari 1</div>
+    <button class="nav-btn" id="nextBtn" onclick="changePage(1)">Next →</button>
+  </div>
+
+  <!-- CONTAINER PREVIEW RINGKAS -->
+  <div class="preview-wrapper">
+    <div id="printContainer"></div>
+  </div>
 
   <script>
     let listPenerima = [
-`- nama : Pelanggan A
-- no hp : 081234567890
-- alamat kirim : Jl. Anggrek No. 1, RT 01/RW 02, Kebayoran Baru, Jakarta Selatan`,
+`- Nama : Amanda Clara
+- No. HP : 0812-9876-5432
+- Alamat : Jl. Wijaya Kusuma No. 12, Kebayoran Baru, Jakarta Selatan`,
 
-`- nama : Pelanggan B
-- no hp : 089876543210
-- alamat kirim : Jl. Mawar No. 45, Gg. Kenanga, Surabaya, Jawa Timur`
+`- Nama : Bryan Kenneth
+- No. HP : 0857-1122-3344
+- Alamat : Danau Bogor Raya Blok C2 No. 5, Bogor Timur, Kota Bogor`,
+
+`- Nama : Citra Kirana
+- No. HP : 0813-2233-4455
+- Alamat : Jl. Raya Darmo No. 45, Surabaya, Jawa Timur`,
+
+`- Nama : Daniel Pratama
+- No. HP : 0899-8877-6655
+- Alamat : Jl. Malioboro No. 100, Yogyakarta`,
+
+`- Nama : Eka Saputra
+- No. HP : 0811-2233-4455
+- Alamat : Jl. Gatot Subroto No. 12, Medan`,
+
+`- Nama : Fani Rahmawati
+- No. HP : 0822-3344-5566
+- Alamat : Jl. Ahmad Yani No. 88, Semarang`
     ];
+
+    let currentPage = 1;
 
     function renderForm() {
       const container = document.getElementById('penerimaInputList');
@@ -372,11 +458,11 @@ Barang: Paket / Gift / Hampers</textarea>
       listPenerima.forEach((teksWa, index) => {
         container.innerHTML += `
           <div class="penerima-card-input">
-            <div style="font-weight:bold; margin-bottom: 8px; color: #0f172a;">Penerima #${index + 1}</div>
+            <div style="font-weight:700; margin-bottom: 8px; font-size: 13px; color: var(--accent-dark);">Penerima #${index + 1}</div>
             ${listPenerima.length > 1 ? `<button class="btn-del" onclick="delPenerima(${index})">Hapus</button>` : ''}
             <div>
-              <label>Format Chat WA Customer (Penerima)</label>
-              <textarea rows="4" placeholder="Paste data WA penerima di sini..." oninput="updateData(${index}, this.value)">${teksWa}</textarea>
+              <label>Format Chat / Detail Penerima</label>
+              <textarea rows="3" placeholder="Paste detail penerima..." oninput="updateData(${index}, this.value)">${teksWa}</textarea>
             </div>
           </div>
         `;
@@ -400,21 +486,53 @@ Barang: Paket / Gift / Hampers</textarea>
       render();
     }
 
+    function changePage(direction) {
+      const totalPages = Math.ceil(listPenerima.length / 2) || 1;
+      currentPage += direction;
+
+      if (currentPage < 1) currentPage = 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      updatePageVisibility();
+    }
+
+    function updatePageVisibility() {
+      const totalPages = Math.ceil(listPenerima.length / 2) || 1;
+      const pages = document.querySelectorAll('.a4-page');
+
+      pages.forEach((page, idx) => {
+        if (idx + 1 === currentPage) {
+          page.classList.add('active-page');
+        } else {
+          page.classList.remove('active-page');
+        }
+      });
+
+      document.getElementById('pageIndicator').innerText = `Halaman ${currentPage} dari ${totalPages}`;
+      document.getElementById('prevBtn').disabled = (currentPage === 1);
+      document.getElementById('nextBtn').disabled = (currentPage === totalPages);
+    }
+
     function render() {
       const container = document.getElementById('printContainer');
       container.innerHTML = '';
 
       const teksPengirim = document.getElementById('pengirimTeks').value;
-
-      // Ambil baris pertama dari teks pengirim sebagai Nama Brand/Toko Header
       const barisPengirim = teksPengirim.trim().split('\n');
-      let namaBrand = barisPengirim[0] ? barisPengirim[0].replace(/^-?\s*(Nama\s*Toko|Nama|Brand)\s*:\s*/i, '') : 'NAMA TOKO / BRAND';
+      let namaBrand = barisPengirim[0] ? barisPengirim[0].replace(/^-?\s*(Nama\s*Toko|Nama|Brand|Studio)\s*:\s*/i, '') : 'YOUR BRAND';
+
+      const totalPages = Math.ceil(listPenerima.length / 2) || 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      let pageCounter = 1;
 
       for (let i = 0; i < listPenerima.length; i += 2) {
         const item1 = listPenerima[i];
         const item2 = listPenerima[i + 1];
 
-        let pageHtml = `<div class="a4-page">`;
+        const activeClass = (pageCounter === currentPage) ? 'active-page' : '';
+
+        let pageHtml = `<div class="a4-page ${activeClass}" id="page-${pageCounter}">`;
         pageHtml += buildSlot(namaBrand, teksPengirim, item1);
         
         if (item2 !== undefined) {
@@ -431,7 +549,10 @@ Barang: Paket / Gift / Hampers</textarea>
         
         pageHtml += `</div>`;
         container.innerHTML += pageHtml;
+        pageCounter++;
       }
+
+      updatePageVisibility();
     }
 
     function buildSlot(namaBrand, teksPengirim, teksPenerima) {
@@ -439,7 +560,7 @@ Barang: Paket / Gift / Hampers</textarea>
         <div class="slot-resi">
           <div class="brand-header">
             <div class="brand-title">${namaBrand}</div>
-            <div class="badge-express">HANDLE WITH CARE</div>
+            <div class="badge-express">FRAGILE / HANDLE WITH CARE</div>
           </div>
 
           <table class="table-box">
@@ -462,19 +583,18 @@ Barang: Paket / Gift / Hampers</textarea>
           <div class="warning-area">
             <div class="warning-flex">
               <svg class="svg-icon" viewBox="0 0 24 24">
-                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3l1.5 3-2 2 2.5 3.5L11 18l1-3-2.5-3L12 9l-1-3z"/>
+                <path d="M12 2L1 21h22L12 2zm0 3.45L20.15 19H3.85L12 5.45zM11 10h2v4h-2zm0 5h2v2h-2z"/>
               </svg>
               <div class="warning-text-container">
-                <div class="warning-main">JANGAN DIBANTING, JANGAN DILEMPAR</div>
-                <div class="warning-sub">HARAP HANDLE DENGAN HATI-HATI</div>
-                <div class="warning-detail">PAKET RAWAN PECAH / RUSAK</div>
+                <div class="warning-main">JANGAN DIBANTING / DILEMPAR</div>
+                <div class="warning-sub">HARAP HANDLE DENGAN HATI-HATI • PAKET RAWAN PECAH</div>
               </div>
             </div>
           </div>
 
           <div class="footer-area">
             <div class="kendala-text">
-              * WAJIB MELAMPIRKAN VIDEO UNBOXING KETIKA MELAKUKAN KOMPLAIN PAKET
+              ✨ TERIMA KASIH TELAH BERBELANJA • WAJIB VIDEO UNBOXING UNTUK KLAIM GARANSI
             </div>
           </div>
         </div>
